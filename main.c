@@ -23,6 +23,9 @@ int main(int argc, char** argv){
 	}
 		
 	load_game(chip, f);
+	for(int i = 0; i < 3; i++){
+		run_cycle(chip);
+	}
 	fclose(f);
 	cleanup(chip);
 	return 0;
