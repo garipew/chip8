@@ -44,3 +44,8 @@ void load_game(Chip* chip, FILE* stream){
 }
 
 
+void cleanup(Chip* chip){
+	if(chip){
+		free(chip);
+	}
+}

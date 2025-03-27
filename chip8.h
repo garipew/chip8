@@ -23,3 +23,5 @@ typedef struct chip{
 
 Chip* initialize();
 void load_game(Chip*, FILE*);
+void cleanup(Chip*);
+#endif
