@@ -37,6 +37,20 @@ Chip* initialize(){
 }
 
 
+void dump(Chip* c, int limit){
+	for(int i = 0; i <= limit; i++){
+		c->V[i] = c->memory[c->I+i];
+	}
+}
+
+
+void load(Chip* c, int limit){
+	for(int i = 0; i <= limit; i++){
+		c->V[i] = c->memory[c->I+i];
+	}
+}
+
+
 void load_game(Chip* chip, FILE* stream){
 	if(chip->sp+1 < STACK_SIZE){
 		push(chip, (chip->pc >> 8) & 0xFF);
@@ -106,11 +120,26 @@ void run_cycle(Chip* c){
 			}
 		case 0x0:
 			switch(c->opcode&0xF){
-		/*clear*/		case 0x0: printf("Clear screen\n"); break;
+		/*clear*/	case 0x0: printf("Clear screen\n"); break;
 		/*return*/	case 0xE: c->pc = pop(c) | pop(c)<<8; break;
 				default: printf("Instruction not found.\n");
 			}
 			break;
+		case 0xF000: 
+			switch(c->opcode & 0xFF){	
+				case GET_DELAY: c->V[X(c)] = c->delay_timer; break;
+				case GET_KEY:printf("Key capture"); break;
+				case SET_DELAY: c->delay_timer = c->V[X(c)]; break;
+				case SET_SOUND: c->sound_timer = c->V[X(c)]; break;
+				case ADD_ADDR: c->I += c->V[X(c)]; break;	
+				case SET_FONT: c->I = c->memory[c->V[X(c)]&0xF]; break;
+				case WRITE_VX: c->memory[c->I] = c->V[X(c)]%10;
+					c->memory[c->I+1] = ((c->V[X(c)]/10)%10);
+					c->memory[c->I+2] = ((c->V[X(c)]/100)%10); break;
+				case DUMP: dump(c, X(c)); break;
+				case LOAD: load(c, X(c)); break;
+				default: printf("instruction not found\n"); return;
+			}
 		default: printf("Operation 0x%4x not supported.\n", c->opcode);
 	}
 }

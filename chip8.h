@@ -20,6 +20,15 @@
 #define RAND 0xC000
 #define DRAW 0xD000
 #define KEYS 0xE000
+#define GET_DELAY 0x07
+#define GET_KEY 0x0A
+#define SET_DELAY 0x15
+#define SET_SOUND 0x18
+#define ADD_ADDR 0x1E
+#define SET_FONT 0x29
+#define WRITE_VX 0x33
+#define DUMP 0x55
+#define LOAD 0x65
 
 
 typedef struct chip{
