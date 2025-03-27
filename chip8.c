@@ -13,6 +13,14 @@
 	c->memory[STACK_ADDR+(--c->sp)]
 
 
+#define X(c) \
+	(c->opcode&0xF00)>>8
+
+
+#define Y(c) \
+	(c->opcode&0xF0)>>4
+
+
 Chip* initialize(){
 	Chip* c = malloc(sizeof(*c));
 	if(!c){
@@ -58,6 +66,9 @@ void run_cycle(Chip* chip){
 			}
 			break;
 		case 0x1000: chip->pc = chip->opcode & 0xFFF; break; 
+		case 0x3000: if(V[X(chip)] == chip->opcode&0xFF){ chip->pc+=2; } break;
+		case 0x4000: if(V[X(chip)] != chip->opcode&0xFF){ chip->pc+=2; } break;
+		case 0x5000: if(V[X(chip)] == V[Y(chip)]){ chip->pc+=2; } break;
 		default: // operation not found
 			printf("Operation not supported.\n");
 	}
