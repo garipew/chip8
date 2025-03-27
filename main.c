@@ -8,30 +8,30 @@
 #ifdef DEBUG
 	#define debug_fn(c)\
 		for(int v = 0; v < 16; v+=4){\
-			printf("V%d: %x ", v, c->V[v]);\
-			printf("V%d: %x ", v+1, c->V[v+1]);\
-			printf("V%d: %x ", v+2, c->V[v+2]);\
-			printf("V%d: %x\n", v+3, c->V[v+3]);\
+			printf("V%x: %2x ", v, c->V[v]);\
+			printf("V%x: %2x ", v+1, c->V[v+1]);\
+			printf("V%x: %2x ", v+2, c->V[v+2]);\
+			printf("V%x: %2x\n", v+3, c->V[v+3]);\
 		}\
 		for(int mem = 0; mem < 4096; mem+=256){\
-			printf("%x ", c->memory[mem]);	\
-			printf("%x ", c->memory[mem+1]);	\
-			printf("%x ", c->memory[mem+2]);	\
-			printf("%x ", c->memory[mem+3]);	\
-			printf("%x ", c->memory[mem+4]);	\
-			printf("%x ", c->memory[mem+5]);	\
-			printf("%x ", c->memory[mem+6]);	\
-			printf("%x ", c->memory[mem+7]);	\
-			printf("%x ", c->memory[mem+8]);	\
-			printf("%x ", c->memory[mem+9]);	\
-			printf("%x ", c->memory[mem+10]);	\
-			printf("%x ", c->memory[mem+11]);	\
-			printf("%x ", c->memory[mem+12]);	\
-			printf("%x ", c->memory[mem+13]);	\
-			printf("%x ", c->memory[mem+14]);	\
-			printf("%x\n", c->memory[mem+15]);	\
+			printf("%2x ", c->memory[mem]);	\
+			printf("%2x ", c->memory[mem+1]);	\
+			printf("%2x ", c->memory[mem+2]);	\
+			printf("%2x ", c->memory[mem+3]);	\
+			printf("%2x ", c->memory[mem+4]);	\
+			printf("%2x ", c->memory[mem+5]);	\
+			printf("%2x ", c->memory[mem+6]);	\
+			printf("%2x ", c->memory[mem+7]);	\
+			printf("%2x ", c->memory[mem+8]);	\
+			printf("%2x ", c->memory[mem+9]);	\
+			printf("%2x ", c->memory[mem+10]);	\
+			printf("%2x ", c->memory[mem+11]);	\
+			printf("%2x ", c->memory[mem+12]);	\
+			printf("%2x ", c->memory[mem+13]);	\
+			printf("%2x ", c->memory[mem+14]);	\
+			printf("%2x\n", c->memory[mem+15]);	\
 		}\
-		printf("pc: %x sp: %x, opcode: %x\n", c->pc, c->sp, c->opcode)
+		printf("pc: %x, sp: %x, opcode: %x\n", c->pc, c->sp, c->opcode)
 #else
 	#define debug_fn(c)\
 		do{\
