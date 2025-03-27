@@ -1,6 +1,6 @@
 #ifndef CHIP8_H
 
-#include <stddef.h>
+#include <stdio.h>
 
 
 #define STACK_ADDR 0xEA0

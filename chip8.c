@@ -6,11 +6,11 @@
 
 
 #define push(c, data) \
-	c->memory[STACK_ADDR+c->sp++] = data;
+	c->memory[STACK_ADDR+c->sp++] = data
 
 
 #define pop(c) \
-	c->memory[STACK_ADDR+(--c->sp)];
+	c->memory[STACK_ADDR+(--c->sp)]
 
 
 Chip* initialize(){
@@ -30,9 +30,9 @@ Chip* initialize(){
 
 
 void load_game(Chip* chip, FILE* stream){
-	if(c->sp+1 < STACK_SIZE){
-		push(c, (chip->pc >> 8) & 0xFF);
-		push(c, chip->pc & 0xFF);
+	if(chip->sp+1 < STACK_SIZE){
+		push(chip, (chip->pc >> 8) & 0xFF);
+		push(chip, chip->pc & 0xFF);
 	} else{
 		printf("Stack Overflow.\n");
 		return;
@@ -40,7 +40,7 @@ void load_game(Chip* chip, FILE* stream){
 	for(chip->pc = 0x200; chip->pc < STACK_ADDR; chip->pc+=2){
 		fgets(chip->memory + chip->pc, 2, stream);
 	}
-	chip->pc = pop(c) | pop(c)<<8;
+	chip->pc = pop(chip) | pop(chip)<<8;
 }
 
 
