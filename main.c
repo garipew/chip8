@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <sys/resource.h>
 
 
 #ifdef DEBUG
@@ -46,6 +47,8 @@ int main(int argc, char** argv){
 		printf("Usage: %s <rom-path>\n", argv[0]);
 		return 1;
 	}
+	double period = 1/60.0;
+	struct timespec start, end;
 	FILE* f = fopen(argv[1], "rb");
 	if(!f){
 		printf("%s: Unable to open %s\n", argv[0], argv[1]);
@@ -59,7 +62,30 @@ int main(int argc, char** argv){
 	}
 		
 	load_game(chip, f);
+	clock_gettime(CLOCK_REALTIME, &start);
+	/*
+	struct timespec elapsed_time;
+	elapsed_time.tv_sec = start.tv_sec;
+	elapsed_time.tv_nsec = start.tv_nsec;
+	int seconds = 0;
+	int frame = 0;
+	*/
 	for(; ;){
+		clock_gettime(CLOCK_REALTIME, &end);
+		if(((end.tv_sec-start.tv_sec) + 1e-9*(double)(end.tv_nsec-start.tv_nsec)) < period){
+			continue;
+		}
+		/*
+		if(end.tv_sec > elapsed_time.tv_sec && end.tv_nsec >= elapsed_time.tv_nsec){
+			printf("elapsed time: %ds\n", ++seconds);
+			elapsed_time.tv_sec = end.tv_sec;
+			elapsed_time.tv_nsec = end.tv_nsec;
+			frame = 0;
+		}
+		printf("frame: %d\n", ++frame);
+		*/
+		start.tv_sec = end.tv_sec;
+		start.tv_nsec = end.tv_nsec;
 		run_cycle(chip);
 		debug_fn(chip);
 	}

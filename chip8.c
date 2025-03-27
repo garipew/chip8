@@ -169,12 +169,16 @@ void run_cycle(Chip* c){
 	}
 	if(c->delay_timer > 0){
 		c->delay_timer--;
+	} else{
+		c->delay_timer = 60;
 	}
 	if(c->sound_timer > 0){
 		if(c->sound_timer == 1){
 			printf("*clap* *clap*\n");
 		}
 		c->sound_timer--;
+	} else{
+		c->sound_timer = 60;
 	}
 }
 
