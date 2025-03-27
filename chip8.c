@@ -44,6 +44,25 @@ void load_game(Chip* chip, FILE* stream){
 }
 
 
+void run_cycle(Chip* chip){
+	chip->opcode = chip->memory[chip->pc++]<<8 | chip->memory[chip->pc++];	
+	switch(chip->opcode & 0xF000){
+		case 0x2000: // function call
+			if(c->sp+1 < STACK_SIZE){
+				push(chip, (chip->pc>>8)&0xFF);
+				push(chip, chip->pc&0xFF);
+				chip->pc = chip->opcode&0xFFF;
+			} else{
+				printf("Stack overflow\n");
+				return;
+			}
+			break;
+		default: // operation not found
+			printf("Operation not supported.\n");
+	}
+}
+
+
 void cleanup(Chip* chip){
 	if(chip){
 		free(chip);
