@@ -58,45 +58,45 @@ void load_game(Chip* chip, FILE* stream){
 }
 
 
-void run_cycle(Chip* chip){
-	chip->opcode = chip->memory[chip->pc++]<<8 | chip->memory[chip->pc++];	
-	switch(chip->opcode & 0xF000){
+void run_cycle(Chip* c){
+	c->opcode = c->memory[c->pc++]<<8 | c->memory[c->pc++];	
+	switch(c->opcode & 0xF000){
 		case FUNCTION_CALL: 
-			if(chip->sp+1 < STACK_SIZE){
-				push(chip, (chip->pc>>8)&0xFF);
-				push(chip, chip->pc&0xFF);
-				chip->pc = chip->opcode&0xFFF;
+			if(c->sp+1 < STACK_SIZE){
+				push(c, (c->pc>>8)&0xFF);
+				push(c, c->pc&0xFF);
+				c->pc = c->opcode&0xFFF;
 			} else{
 				printf("Stack overflow\n");
 				return;
 			}
 			break;
 		case CALC: 
-			switch(chip->opcode&0xF){							
-				case 0x0:chip->V[X(chip)] = chip->V[Y(chip)];break;							
-				case 0x1:chip->V[X(chip)] |= chip->V[Y(chip)];break;							
-				case 0x2: chip->V[X(chip)] &= chip->V[Y(chip)]; break;
-				case 0x3: chip->V[X(chip)] ^= chip->V[Y(chip)]; break;
-				case 0x4: push(chip, chip->V[X(chip)]); chip->V[X(chip)] += chip->V[Y(chip)];
-					chip->V[0xF] = pop(chip) > chip->V[X(chip)]; break;
-				case 0x5: chip->V[0xF] = chip->V[X(chip)] >= chip->V[Y(chip)];
-					chip->V[X(chip)] -= chip->V[Y(chip)]; break;
-				case 0x6: chip->V[0xF] = chip->V[X(chip)]&0x1; chip->V[X(chip)] >>= 1; break;
-				case 0x7: chip->V[0xF] = chip->V[Y(chip)] >= chip->V[X(chip)];
-					chip->V[X(chip)] = chip->V[Y(chip)] - chip->V[X(chip)]; break;
-				case 0xE: chip->V[0xF] = (chip->V[X(chip)]>>7)&0x1; chip->V[X(chip)]<<=1; break;
+			switch(c->opcode&0xF){							
+				case 0x0:c->V[X(c)] = c->V[Y(c)];break;							
+				case 0x1:c->V[X(c)] |= c->V[Y(c)];break;							
+				case 0x2: c->V[X(c)] &= c->V[Y(c)]; break;
+				case 0x3: c->V[X(c)] ^= c->V[Y(c)]; break;
+				case 0x4: push(c, c->V[X(c)]); c->V[X(c)] += c->V[Y(c)];
+					c->V[0xF] = pop(c) > c->V[X(c)]; break;
+				case 0x5: c->V[0xF] = c->V[X(c)] >= c->V[Y(c)];
+					c->V[X(c)] -= c->V[Y(c)]; break;
+				case 0x6: c->V[0xF] = c->V[X(c)]&0x1; c->V[X(c)] >>= 1; break;
+				case 0x7: c->V[0xF] = c->V[Y(c)] >= c->V[X(c)];
+					c->V[X(c)] = c->V[Y(c)] - c->V[X(c)]; break;
+				case 0xE: c->V[0xF] = (c->V[X(c)]>>7)&0x1; c->V[X(c)]<<=1; break;
 				default: printf("Instruction not found.\n"); return;
 			}
-		case JP: chip->pc = chip->opcode & 0xFFF; break; 
-		case JEQ: if(chip->V[X(chip)] == (chip->opcode&0xFF)){ chip->pc+=2; } break;
-		case JNE: if(chip->V[X(chip)] != (chip->opcode&0xFF)){ chip->pc+=2; } break;
-		case JEI: if(chip->V[X(chip)] == chip->V[Y(chip)]){ chip->pc+=2; } break;
-		case JNI: if(chip->V[X(chip)] != chip->V[Y(chip)]){ chip->pc+=2; } break;
-		case JP_OFFSET: chip->pc = (chip->opcode&0xFFF) + chip->V[0]; break;
-		case MOV: chip->V[X(chip)] = chip->opcode&0xFF; break;
-		case ADDI: chip->V[X(chip)] += chip->opcode&0xFF; break;
-		case SET_I: chip->I = chip->opcode&0xFFF; break;
-		case RAND: chip->V[X(chip)] = rand() & (chip->opcode&0xFF); break;
+		case JP: c->pc = c->opcode & 0xFFF; break; 
+		case JEQ: if(c->V[X(c)] == (c->opcode&0xFF)){ c->pc+=2; } break;
+		case JNE: if(c->V[X(c)] != (c->opcode&0xFF)){ c->pc+=2; } break;
+		case JEI: if(c->V[X(c)] == c->V[Y(c)]){ c->pc+=2; } break;
+		case JNI: if(c->V[X(c)] != c->V[Y(c)]){ c->pc+=2; } break;
+		case JP_OFFSET: c->pc = (c->opcode&0xFFF) + c->V[0]; break;
+		case MOV: c->V[X(c)] = c->opcode&0xFF; break;
+		case ADDI: c->V[X(c)] += c->opcode&0xFF; break;
+		case SET_I: c->I = c->opcode&0xFFF; break;
+		case RAND: c->V[X(c)] = rand() & (c->opcode&0xFF); break;
 		case DRAW: printf("Drawn"); break;
 		case KEYS: 
 			switch(c->opcode&0xFF){ 
@@ -104,7 +104,14 @@ void run_cycle(Chip* chip){
 				case 0xA1: if(!(c->keys[X(c)]&0xF)){ c->pc+=2; } break;
 				default: printf("Instruction not found.\n"); return;
 			}
-		default: printf("Operation 0x%4x not supported.\n", chip->opcode);
+		case 0x0:
+			switch(c->opcode&0xF){
+		/*clear*/		case 0x0: printf("Clear screen\n"); break;
+		/*return*/	case 0xE: c->pc = pop(c) | pop(c)<<8; break;
+				default: printf("Instruction not found.\n");
+			}
+			break;
+		default: printf("Operation 0x%4x not supported.\n", c->opcode);
 	}
 }
 
