@@ -7,12 +7,14 @@
 
 #ifdef DEBUG
 	#define debug_fn(c)\
+		printf("opcode: %x\n", c->opcode);\
 		for(int v = 0; v < 16; v+=4){\
 			printf("V%x: %2x ", v, c->V[v]);\
 			printf("V%x: %2x ", v+1, c->V[v+1]);\
 			printf("V%x: %2x ", v+2, c->V[v+2]);\
 			printf("V%x: %2x\n", v+3, c->V[v+3]);\
 		}\
+		printf("I: %4x\n", c->I);\
 		for(int mem = 0; mem < 4096; mem+=256){\
 			printf("%2x ", c->memory[mem]);	\
 			printf("%2x ", c->memory[mem+1]);	\
@@ -31,7 +33,7 @@
 			printf("%2x ", c->memory[mem+14]);	\
 			printf("%2x\n", c->memory[mem+15]);	\
 		}\
-		printf("pc: %x, sp: %x, opcode: %x\n", c->pc, c->sp, c->opcode)
+		printf("pc: %x, sp: %x\n", c->pc, c->sp)
 #else
 	#define debug_fn(c)\
 		do{\

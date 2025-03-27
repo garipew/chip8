@@ -30,6 +30,8 @@ Chip* initialize(){
 	c->sp = 0;
 	c->opcode = 0;
 	c->I = 0;
+	c->delay_timer = 60;
+	c->sound_timer = 60;
 	memset(c->keys, 0, sizeof(*c->keys)*16);
 	memset(c->display, 0, sizeof(*c->display)*64*32);
 	srand(time(NULL));
@@ -141,7 +143,7 @@ void run_cycle(Chip* c){
 		case ADDI: c->V[X(c)] += c->opcode&0xFF; break;
 		case SET_I: c->I = c->opcode&0xFFF; break;
 		case RAND: c->V[X(c)] = rand() & (c->opcode&0xFF); break;
-		case DRAW: printf("Drawn"); break;
+		case DRAW: printf("Drawn\n"); break;
 		default: printf("opcode: 0x%4x not found", c->opcode); return;
 	}
 }
