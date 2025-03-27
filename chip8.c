@@ -99,34 +99,24 @@ void run_cycle(Chip* c){
 				case 0x7: c->V[0xF] = c->V[Y(c)] >= c->V[X(c)];
 					c->V[X(c)] = c->V[Y(c)] - c->V[X(c)]; break;
 				case 0xE: c->V[0xF] = (c->V[X(c)]>>7)&0x1; c->V[X(c)]<<=1; break;
-				default: printf("Instruction not found.\n"); return;
+				default: printf("opcode: 0x%4x not found", c->opcode); return;
 			}
-		case JP: c->pc = c->opcode & 0xFFF; break; 
-		case JEQ: if(c->V[X(c)] == (c->opcode&0xFF)){ c->pc+=2; } break;
-		case JNE: if(c->V[X(c)] != (c->opcode&0xFF)){ c->pc+=2; } break;
-		case JEI: if(c->V[X(c)] == c->V[Y(c)]){ c->pc+=2; } break;
-		case JNI: if(c->V[X(c)] != c->V[Y(c)]){ c->pc+=2; } break;
-		case JP_OFFSET: c->pc = (c->opcode&0xFFF) + c->V[0]; break;
-		case MOV: c->V[X(c)] = c->opcode&0xFF; break;
-		case ADDI: c->V[X(c)] += c->opcode&0xFF; break;
-		case SET_I: c->I = c->opcode&0xFFF; break;
-		case RAND: c->V[X(c)] = rand() & (c->opcode&0xFF); break;
-		case DRAW: printf("Drawn"); break;
 		case KEYS: 
 			switch(c->opcode&0xFF){ 
 				case 0x9E: if(c->keys[X(c)]&0xF){ c->pc+=2; } break;
 				case 0xA1: if(!(c->keys[X(c)]&0xF)){ c->pc+=2; } break;
-				default: printf("Instruction not found.\n"); return;
+				default: printf("opcode: 0x%4x not found", c->opcode); return;
 			}
+			break;
 		case 0x0:
 			switch(c->opcode&0xF){
 		/*clear*/	case 0x0: printf("Clear screen\n"); break;
 		/*return*/	case 0xE: c->pc = pop(c) | pop(c)<<8; break;
-				default: printf("Instruction not found.\n");
+				default: printf("opcode: 0x%4x not found", c->opcode); return;
 			}
 			break;
 		case 0xF000: 
-			switch(c->opcode & 0xFF){	
+			switch(c->opcode&0xFF){	
 				case GET_DELAY: c->V[X(c)] = c->delay_timer; break;
 				case GET_KEY:printf("Key capture"); break;
 				case SET_DELAY: c->delay_timer = c->V[X(c)]; break;
@@ -138,9 +128,21 @@ void run_cycle(Chip* c){
 					c->memory[c->I+2] = ((c->V[X(c)]/100)%10); break;
 				case DUMP: dump(c, X(c)); break;
 				case LOAD: load(c, X(c)); break;
-				default: printf("instruction not found\n"); return;
+				default: printf("opcode: 0x%4x not found", c->opcode); return;
 			}
-		default: printf("Operation 0x%4x not supported.\n", c->opcode);
+			break;
+		case JP: c->pc = c->opcode & 0xFFF; break; 
+		case JEQ: if(c->V[X(c)] == (c->opcode&0xFF)){ c->pc+=2; } break;
+		case JNE: if(c->V[X(c)] != (c->opcode&0xFF)){ c->pc+=2; } break;
+		case JEI: if(c->V[X(c)] == c->V[Y(c)]){ c->pc+=2; } break;
+		case JNI: if(c->V[X(c)] != c->V[Y(c)]){ c->pc+=2; } break;
+		case JP_OFFSET: c->pc = (c->opcode&0xFFF) + c->V[0]; break;
+		case MOV: c->V[X(c)] = c->opcode&0xFF; break;
+		case ADDI: c->V[X(c)] += c->opcode&0xFF; break;
+		case SET_I: c->I = c->opcode&0xFFF; break;
+		case RAND: c->V[X(c)] = rand() & (c->opcode&0xFF); break;
+		case DRAW: printf("Drawn"); break;
+		default: printf("opcode: 0x%4x not found", c->opcode); return;
 	}
 }
 

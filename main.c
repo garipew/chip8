@@ -57,10 +57,10 @@ int main(int argc, char** argv){
 	}
 		
 	load_game(chip, f);
-	for(int i = 0; i < 3; i++){
+	for(; ;){
 		run_cycle(chip);
+		debug_fn(chip);
 	}
-	debug_fn(chip);
 	fclose(f);
 	cleanup(chip);
 	return 0;

@@ -8,6 +8,7 @@
 
 #define FUNCTION_CALL 0x2000
 #define CALC 0x8000
+#define KEYS 0xE000
 #define JP 0x1000
 #define JEQ 0x3000
 #define JNE 0x4000
@@ -19,7 +20,6 @@
 #define SET_I 0xA000
 #define RAND 0xC000
 #define DRAW 0xD000
-#define KEYS 0xE000
 #define GET_DELAY 0x07
 #define GET_KEY 0x0A
 #define SET_DELAY 0x15
