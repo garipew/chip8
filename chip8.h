@@ -18,6 +18,8 @@
 #define ADDI 0x7000
 #define SET_I 0xA000
 #define RAND 0xC000
+#define DRAW 0xD000
+#define KEYS 0xE000
 
 
 typedef struct chip{

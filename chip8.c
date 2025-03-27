@@ -97,6 +97,13 @@ void run_cycle(Chip* chip){
 		case ADDI: chip->V[X(chip)] += chip->opcode&0xFF; break;
 		case SET_I: chip->I = chip->opcode&0xFFF; break;
 		case RAND: chip->V[X(chip)] = rand() & (chip->opcode&0xFF); break;
+		case DRAW: printf("Drawn"); break;
+		case KEYS: 
+			switch(c->opcode&0xFF){ 
+				case 0x9E: if(c->keys[X(c)]&0xF){ c->pc+=2; } break;
+				case 0xA1: if(!(c->keys[X(c)]&0xF)){ c->pc+=2; } break;
+				default: printf("Instruction not found.\n"); return;
+			}
 		default: printf("Operation 0x%4x not supported.\n", chip->opcode);
 	}
 }
