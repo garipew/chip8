@@ -7,6 +7,7 @@
 #define STACK_SIZE 48
 
 #define FUNCTION_CALL 0x2000
+#define CALC 0x8000
 #define JP 0x1000
 #define JEQ 0x3000
 #define JNE 0x4000

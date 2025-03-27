@@ -71,6 +71,22 @@ void run_cycle(Chip* chip){
 				return;
 			}
 			break;
+		case CALC: 
+			switch(chip->opcode&0xF){							
+				case 0x0:chip->V[X(chip)] = chip->V[Y(chip)];break;							
+				case 0x1:chip->V[X(chip)] |= chip->V[Y(chip)];break;							
+				case 0x2: chip->V[X(chip)] &= chip->V[Y(chip)]; break;
+				case 0x3: chip->V[X(chip)] ^= chip->V[Y(chip)]; break;
+				case 0x4: push(chip, chip->V[X(chip)]); chip->V[X(chip)] += chip->V[Y(chip)];
+					chip->V[0xF] = pop(chip) > chip->V[X(chip)]; break;
+				case 0x5: chip->V[0xF] = chip->V[X(chip)] >= chip->V[Y(chip)];
+					chip->V[X(chip)] -= chip->V[Y(chip)]; break;
+				case 0x6: chip->V[0xF] = chip->V[X(chip)]&0x1; chip->V[X(chip)] >>= 1; break;
+				case 0x7: chip->V[0xF] = chip->V[Y(chip)] >= chip->V[X(chip)];
+					chip->V[X(chip)] = chip->V[Y(chip)] - chip->V[X(chip)]; break;
+				case 0xE: chip->V[0xF] = (chip->V[X(chip)]>>7)&0x1; chip->V[X(chip)]<<=1; break;
+				default: printf("Instruction not found.\n"); return;
+			}
 		case JP: chip->pc = chip->opcode & 0xFFF; break; 
 		case JEQ: if(chip->V[X(chip)] == (chip->opcode&0xFF)){ chip->pc+=2; } break;
 		case JNE: if(chip->V[X(chip)] != (chip->opcode&0xFF)){ chip->pc+=2; } break;
