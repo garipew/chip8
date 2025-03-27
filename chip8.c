@@ -110,48 +110,48 @@ void run_cycle(Chip* c){
 			break;
 		case CALC: 
 			switch(c->opcode&0xF){							
-				case 0x0:c->V[X(c)] = c->V[Y(c)];break;							
-				case 0x1:c->V[X(c)] |= c->V[Y(c)];break;							
-				case 0x2: c->V[X(c)] &= c->V[Y(c)]; break;
-				case 0x3: c->V[X(c)] ^= c->V[Y(c)]; break;
+				case 0x0:c->V[X(c)] = c->V[Y(c)]; return;							
+				case 0x1:c->V[X(c)] |= c->V[Y(c)]; return;							
+				case 0x2: c->V[X(c)] &= c->V[Y(c)]; return;
+				case 0x3: c->V[X(c)] ^= c->V[Y(c)]; return;
 				case 0x4: push(c, c->V[X(c)]); c->V[X(c)] += c->V[Y(c)];
-					c->V[0xF] = pop(c) > c->V[X(c)]; break;
+					c->V[0xF] = pop(c) > c->V[X(c)]; return;
 				case 0x5: c->V[0xF] = c->V[X(c)] >= c->V[Y(c)];
-					c->V[X(c)] -= c->V[Y(c)]; break;
-				case 0x6: c->V[0xF] = c->V[X(c)]&0x1; c->V[X(c)] >>= 1; break;
+					c->V[X(c)] -= c->V[Y(c)]; return;
+				case 0x6: c->V[0xF] = c->V[X(c)]&0x1; c->V[X(c)] >>= 1; return;
 				case 0x7: c->V[0xF] = c->V[Y(c)] >= c->V[X(c)];
-					c->V[X(c)] = c->V[Y(c)] - c->V[X(c)]; break;
-				case 0xE: c->V[0xF] = (c->V[X(c)]>>7)&0x1; c->V[X(c)]<<=1; break;
-				default: printf("opcode: 0x%4x not found", c->opcode); return;
+					c->V[X(c)] = c->V[Y(c)] - c->V[X(c)]; return;
+				case 0xE: c->V[0xF] = (c->V[X(c)]>>7)&0x1; c->V[X(c)]<<=1; return;
+				default: printf("opcode: 0x%4x not found\n", c->opcode); return;
 			}
 		case KEYS: 
 			switch(c->opcode&0xFF){ 
-				case 0x9E: if(c->keys[X(c)]&0xF){ c->pc+=2; } break;
-				case 0xA1: if(!(c->keys[X(c)]&0xF)){ c->pc+=2; } break;
-				default: printf("opcode: 0x%4x not found", c->opcode); return;
+				case 0x9E: if(c->keys[X(c)]&0xF){ c->pc+=2; } return;
+				case 0xA1: if(!(c->keys[X(c)]&0xF)){ c->pc+=2; } return;
+				default: printf("opcode: 0x%4x not found\n", c->opcode); return;
 			}
 			break;
 		case 0x0:
 			switch(c->opcode&0xF){
-		/*clear*/	case 0x0: printf("Clear screen\n"); break;
-		/*return*/	case 0xE: c->pc = pop(c) | pop(c)<<8; break;
-				default: printf("opcode: 0x%4x not found", c->opcode); return;
+		/*clear*/	case 0x0: printf("Clear screen\n"); return;
+		/*return*/	case 0xE: c->pc = pop(c) | pop(c)<<8; return;
+				default: printf("opcode: 0x%4x not found\n", c->opcode); return;
 			}
 			break;
 		case 0xF000: 
 			switch(c->opcode&0xFF){	
-				case GET_DELAY: c->V[X(c)] = c->delay_timer; break;
-				case GET_KEY:printf("Key capture"); break;
-				case SET_DELAY: c->delay_timer = c->V[X(c)]; break;
-				case SET_SOUND: c->sound_timer = c->V[X(c)]; break;
-				case ADD_ADDR: c->I += c->V[X(c)]; break;	
-				case SET_FONT: c->I = c->memory[c->V[X(c)]&0xF]; break;
+				case GET_DELAY: c->V[X(c)] = c->delay_timer; return;
+				case GET_KEY:printf("Key capture"); return;
+				case SET_DELAY: c->delay_timer = c->V[X(c)]; return;
+				case SET_SOUND: c->sound_timer = c->V[X(c)]; return;
+				case ADD_ADDR: c->I += c->V[X(c)]; return;	
+				case SET_FONT: c->I = c->memory[c->V[X(c)]&0xF]; return;
 				case WRITE_VX: c->memory[c->I] = c->V[X(c)]%10;
 					c->memory[c->I+1] = ((c->V[X(c)]/10)%10);
-					c->memory[c->I+2] = ((c->V[X(c)]/100)%10); break;
-				case DUMP: dump(c, X(c)); break;
-				case LOAD: load(c, X(c)); break;
-				default: printf("opcode: 0x%4x not found", c->opcode); return;
+					c->memory[c->I+2] = ((c->V[X(c)]/100)%10); return;
+				case DUMP: dump(c, X(c)); return;
+				case LOAD: load(c, X(c)); return;
+				default: printf("opcode: 0x%4x not found\n", c->opcode); return;
 			}
 			break;
 		case JP: c->pc = c->opcode & 0xFFF; break; 
@@ -165,7 +165,16 @@ void run_cycle(Chip* c){
 		case SET_I: c->I = c->opcode&0xFFF; break;
 		case RAND: c->V[X(c)] = rand() & (c->opcode&0xFF); break;
 		case DRAW: printf("Drawn\n"); break;
-		default: printf("opcode: 0x%4x not found", c->opcode); return;
+		default: printf("opcode: 0x%4x not found\n", c->opcode); return;
+	}
+	if(c->delay_timer > 0){
+		c->delay_timer--;
+	}
+	if(c->sound_timer > 0){
+		if(c->sound_timer == 1){
+			printf("*clap* *clap*\n");
+		}
+		c->sound_timer--;
 	}
 }
 
