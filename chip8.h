@@ -12,8 +12,11 @@
 #define JNE 0x4000
 #define JEI 0x5000
 #define JNI 0x9000
+#define JP_OFFSET 0xB000
 #define MOV 0x6000
 #define ADDI 0x7000
+#define SET_I 0xA000
+#define RAND 0xC000
 
 
 typedef struct chip{

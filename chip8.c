@@ -76,10 +76,12 @@ void run_cycle(Chip* chip){
 		case JNE: if(chip->V[X(chip)] != (chip->opcode&0xFF)){ chip->pc+=2; } break;
 		case JEI: if(chip->V[X(chip)] == chip->V[Y(chip)]){ chip->pc+=2; } break;
 		case JNI: if(chip->V[X(chip)] != chip->V[Y(chip)]){ chip->pc+=2; } break;
-		case MOV: chip->V[X(chip)] = chip->opcode&0xFF; printf("%x\n",chip->V[X(chip)]); break;
-		case ADDI: chip->V[X(chip)] += chip->opcode&0xFF;printf("%x\n",chip->V[X(chip)]); break;
-		default: // operation not found
-			printf("Operation 0x%4x not supported.\n", chip->opcode);
+		case JP_OFFSET: chip->pc = (chip->opcode&0xFFF) + chip->V[0]; break;
+		case MOV: chip->V[X(chip)] = chip->opcode&0xFF; break;
+		case ADDI: chip->V[X(chip)] += chip->opcode&0xFF; break;
+		case SET_I: chip->I = chip->opcode&0xFFF; break;
+		case RAND: chip->V[X(chip)] = rand() & (chip->opcode&0xFF); break;
+		default: printf("Operation 0x%4x not supported.\n", chip->opcode);
 	}
 }
 
