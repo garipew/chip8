@@ -57,6 +57,7 @@ void run_cycle(Chip* chip){
 				return;
 			}
 			break;
+		case 0x1000: chip->pc = chip->opcode & 0xFFF; break; 
 		default: // operation not found
 			printf("Operation not supported.\n");
 	}
