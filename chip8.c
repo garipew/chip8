@@ -61,7 +61,7 @@ void load_game(Chip* chip, FILE* stream){
 void run_cycle(Chip* chip){
 	chip->opcode = chip->memory[chip->pc++]<<8 | chip->memory[chip->pc++];	
 	switch(chip->opcode & 0xF000){
-		case 0x2000: // function call
+		case FUNCTION_CALL: 
 			if(chip->sp+1 < STACK_SIZE){
 				push(chip, (chip->pc>>8)&0xFF);
 				push(chip, chip->pc&0xFF);
@@ -71,12 +71,15 @@ void run_cycle(Chip* chip){
 				return;
 			}
 			break;
-		case 0x1000: chip->pc = chip->opcode & 0xFFF; break; 
-		case 0x3000: if(chip->V[X(chip)] == (chip->opcode&0xFF)){ chip->pc+=2; } break;
-		case 0x4000: if(chip->V[X(chip)] != (chip->opcode&0xFF)){ chip->pc+=2; } break;
-		case 0x5000: if(chip->V[X(chip)] == chip->V[Y(chip)]){ chip->pc+=2; } break;
+		case JP: chip->pc = chip->opcode & 0xFFF; break; 
+		case JEQ: if(chip->V[X(chip)] == (chip->opcode&0xFF)){ chip->pc+=2; } break;
+		case JNE: if(chip->V[X(chip)] != (chip->opcode&0xFF)){ chip->pc+=2; } break;
+		case JEI: if(chip->V[X(chip)] == chip->V[Y(chip)]){ chip->pc+=2; } break;
+		case JNI: if(chip->V[X(chip)] != chip->V[Y(chip)]){ chip->pc+=2; } break;
+		case MOV: chip->V[X(chip)] = chip->opcode&0xFF; printf("%x\n",chip->V[X(chip)]); break;
+		case ADDI: chip->V[X(chip)] += chip->opcode&0xFF;printf("%x\n",chip->V[X(chip)]); break;
 		default: // operation not found
-			printf("Operation not supported.\n");
+			printf("Operation 0x%4x not supported.\n", chip->opcode);
 	}
 }
 
